@@ -1,0 +1,80 @@
+{% extends 'main.html' %} 
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-12">
+    <!-- DATA TABLE -->
+    <h3 class="title-5 m-b-35"></h3>
+    <div class="table-data__tool">
+      <div class="table-data__tool-left">
+        <form action="{% url 'student' %}" method="get">
+          <div>
+            <input class="input input--text" id="formInput#search" type="text" value="{{search_query}}"
+              name="search_query" placeholder="Search by Student" />  
+            <input class="btn btn--sub btn--lg" type="submit" value="Search" />
+          </div>
+        </form>
+      </div>
+      <div class="table-data__tool-right">
+        <button class="au-btn au-btn-icon au-btn--green au-btn--small">
+          <a href="{% url 'add-student' %}"><i class="zmdi zmdi-plus"></i>Add a student</a>
+        </button>
+      </div>
+    </div>
+    <div class="table-responsive table-responsive-data2">
+      <table class="table table-data2">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <!-- <th>Image</th> -->
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Address</th>
+            <th>Dob</th>
+            <th>Gender</th>
+            <th>Course Name</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for student in students %} {% if student.StCName.all.count >= 1 %}
+          {% for cname in student.StCName.all %}
+          <tr class="tr-shadow">
+            <td>{{student.StName}}</td>
+            <!-- <td><img src="{{student.StImage.url}}" alt=""></td> -->
+            <td>{{student.StPhone}}</td>
+            <td>
+              <span class="block-email">{{student.StEmail}}</span>
+            </td>
+            <td>{{student.StAddress}}</td>
+            <td>{{student.StDob}}</td>
+            <td>{{student.StGender}}</td>
+            <td>{{cname}}</td>
+            <td class="desc">{{student.StRemarks}}</td>
+            <td>
+              <div class="table-data-feature">
+                <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="View ID">
+                  <a href="{% url 'view-card' student.StNum %}"><i class="zmdi zmdi-eye"></i></a>
+                </button>
+                <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
+                  <a href="{% url 'update-student' student.StNum %}"><i class="zmdi zmdi-edit"></i></a>
+                </button>
+                <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                  <a href="{% url 'delete-student' student.StNum %}?next=/adminpanel/students"><i
+                      class="zmdi zmdi-delete"></i></a>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="spacer"></tr>
+          {% endfor %} {% endif %} {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- END DATA TABLE -->
+  </div>
+</div>
+
+{% include 'pagination.html' with queryset=students custom_range=custom_range %}
+{% endblock content %}

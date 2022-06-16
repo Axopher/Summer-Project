@@ -1,0 +1,37 @@
+{% extends 'main.html' %}
+{% block content %}
+<div class="page-content--bge5">
+    <div class="container">
+        <div class="login-wrap">
+            <div class="wrapper">
+                <div class="title">
+                    <!-- <img src="" alt="adminlogo"> -->
+                  </div>
+                  <div class="form">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="inputfield">
+                            <label>{{field.label}}</label>
+                            {{field}}
+                         </div>
+                         {% endfor %}
+                         <div class="inputfield">
+                            <input type="submit" value="Submit" class="btn">
+                         </div>                         
+                    </form>    
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- <div class="custom_select">
+    <select>
+      <option value="">Select</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div> -->

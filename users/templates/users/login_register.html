@@ -1,0 +1,75 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<!-- {% if page == 'register' %}
+    <h1>Register User</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        
+        {{form.as_p}}
+        <input type="submit" value="Register User">
+    </form>
+    <p>Already have an account <a href="{% url 'login' %}">Sign in</a></p>
+    {% else %}
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        <label for="">Username</label>
+        <input type="text" name="username" placeholder="username"><br>
+        <label for="">Password</label>
+        <input type="password" name="password" placeholder="Enter password">
+        <br>
+        <input type="submit" value="login">
+
+        <p>Don't have an account <a href="{% url 'register' %}">Sign Up</a></p>
+    </form> -->
+
+<!-- {% endif %} -->
+
+
+
+<div class="page-wrapper">
+  <div class="page-content--bge5">
+    <div class="container">
+      <div class="login-wrap">
+        <div class="login-content">
+          <div class="login-logo">
+            <a href="#">
+              <img src="images/icon/logo.png" alt="">
+              
+            </a>
+          </div>
+          <div class="login-form">
+            <form action="{% url 'login' %}" method="POST">
+              <div class="form-group">
+                {% csrf_token %}
+                <!-- Input:Username -->
+                <label for="formInput#text">Username: </label>
+                <input class="au-input au-input--full" id="formInput#text" type="text" name="username"
+                  placeholder="Enter your username..." />
+              </div>
+              <div class="form-group">
+                <!-- Input:Password -->
+              <div class="form__field">
+                  <label for="formInput#password">Password: </label>
+                  <input class="au-input au-input--full" id="formInput#passowrd" type="password" name="password"
+                    placeholder="••••••••" />
+              </div>
+              </div>
+              <div class="login-checkbox">
+                <label>
+                  <a href="#">Forgotten Password?</a>
+                </label>
+              </div>
+              <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Log in</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+{% endblock content %}
