@@ -2,7 +2,7 @@ from .models import *
 
 from django.core.paginator import Paginator , PageNotAnInteger , EmptyPage
 
-
+from .filters import *
 
 def searchStudents(request):
     search_query = ''
@@ -10,8 +10,13 @@ def searchStudents(request):
     if request.GET.get('search_query'):
         search_query = request.GET.get('search_query')
 
-    studentObj = Student.objects.filter(StName__icontains=search_query)
-    return studentObj
+    students = Student.objects.filter(StName__icontains=search_query)
+
+    myFilter = StudentFilter(request.GET,queryset=students)
+    students = myFilter.qs 
+
+
+    return students,myFilter
     
 def searchFees(request):
     search_query = ''
@@ -19,9 +24,15 @@ def searchFees(request):
     if request.GET.get('search_query'):
         search_query = request.GET.get('search_query')
 
-    feeObj = Fee.objects.filter(FStudName__StName__icontains=search_query)
+    fees = Fee.objects.filter(FStudName__StName__icontains=search_query)
 
-    return feeObj
+    # fees = Fee.objects.all()
+    myFilter = FeeFilter(request.GET,queryset=fees)
+    fees = myFilter.qs 
+
+
+    return fees,myFilter
+
 
 def searchCourses(request):
     search_query = ''
@@ -29,9 +40,14 @@ def searchCourses(request):
     if request.GET.get('search_query'):
         search_query = request.GET.get('search_query')
 
-    courseObj = Course.objects.filter(CName__icontains=search_query)
+    courses = Course.objects.filter(CName__icontains=search_query)
 
-    return courseObj   
+    # courses = Course.objects.all()
+    myFilter = CourseFilter(request.GET,queryset=courses)
+    courses = myFilter.qs 
+
+
+    return courses,myFilter
 
 def searchTeachers(request):
     search_query = ''
@@ -39,9 +55,13 @@ def searchTeachers(request):
     if request.GET.get('search_query'):
         search_query = request.GET.get('search_query')
 
-    teacherObj = Teacher.objects.filter(TName__icontains=search_query)
+    teachers = Teacher.objects.filter(TName__icontains=search_query)
 
-    return teacherObj      
+    myFilter = TeacherFilter(request.GET,queryset=teachers)
+    teachers = myFilter.qs 
+
+
+    return teachers,myFilter  
 
 def paginateFees(request,fees,results):
     

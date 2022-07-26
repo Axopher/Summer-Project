@@ -8,10 +8,11 @@ class StudentForm(ModelForm):
         fields = '__all__'
         # fields = ['StName','StPhone','StEmail']
         # exclude = ['StCName']
-        
+
         widgets = {
             'StCName': forms.CheckboxSelectMultiple(),
         }
+
 
     def  __init__(self, *args, **kwargs):
         super(StudentForm, self).__init__(*args, **kwargs)
@@ -55,8 +56,12 @@ class FeeForm(ModelForm):
             'FCourseName': forms.CheckboxSelectMultiple()
         }
 
+    # Admission = forms.CharField(widget=forms.NumberInput(attrs={"disabled"}))
+
     def  __init__(self, *args, **kwargs):
         super(FeeForm, self).__init__(*args, **kwargs)
+        self.fields['Admission'].widget.attrs['readonly'] = True
+        self.fields['Refundable_Deposit'].widget.attrs['readonly'] = True
 
         for name,field in self.fields.items():
             field.widget.attrs.update({'class':'input'})    

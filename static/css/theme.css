@@ -100,6 +100,7 @@ p {
 
 /* ----- Typography ----- */
 body {
+    background-color: whitesmoke;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-size: 16px;
@@ -4581,6 +4582,7 @@ section {
 
 .table-data__tool .table-data__tool-left > div {
     margin-right: 12px;
+    border: black;
 }
 
 .table-data__tool .table-data__tool-right > button {

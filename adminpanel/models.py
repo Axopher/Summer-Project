@@ -24,13 +24,13 @@ class Teacher(models.Model):
         ('Post Graduate','Post Graduate'),
         ('PhD','PhD')
     )
-    TQualification = models.CharField(max_length=16,choices=graduation_type)
+    TQualification = models.CharField(max_length=16,choices=graduation_type,default='Under Graduate')
     gender_type = (
         ('male','male'),
         ('female','female'),
         ('others','others')
     )
-    TGender = models.CharField(max_length=6,choices=gender_type) 
+    TGender = models.CharField(max_length=6,choices=gender_type,default='male') 
     created = models.DateTimeField(auto_now_add=True,null=True)
     
 
@@ -64,7 +64,7 @@ class Student(models.Model):
         ('female','female'),
         ('others','others')
     )
-    StGender = models.CharField(max_length=6,choices=gender_type) 
+    StGender = models.CharField(max_length=6,choices=gender_type,default='male') 
     StRemarks = models.TextField(blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True,null=True)
 

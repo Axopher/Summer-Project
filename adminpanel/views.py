@@ -6,13 +6,18 @@ from .forms import *
 
 from django.contrib.auth.decorators import login_required
 
-from .utils import *
+from .utils import * 
 
-from django.core.paginator import Paginator , PageNotAnInteger , EmptyPage
+# from django.core.paginator import Paginator , PageNotAnInteger , EmptyPage
 
 # user roles
-from .decorators import allowed_users
+# from .decorators import allowed_users
 
+
+import re
+from django.contrib import messages
+
+ 
 # Create your views here.
 
 @login_required(login_url='login')
@@ -39,24 +44,25 @@ def viewDashboard(request):
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
 def student(request):
-    students=searchStudents(request)
+    students,myFilter=searchStudents(request)
 
     custom_range,students = paginateStudents(request,students,10)
 
-    context = {'students' : students,'custom_range':custom_range}
+    context = {'students' : students,'custom_range':custom_range,'myFilter':myFilter}
     return render(request,'adminpanel/students.html',context)
 
 
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
 def course(request):
-    courses = searchCourses(request)
+    courses,myFilter = searchCourses(request)
 
     custom_range,courses = paginateStudents(request,courses,10)
 
     context = {
         'courses':courses,
-        'custom_range':custom_range
+        'custom_range':custom_range,
+        'myFilter':myFilter
     }
 
     return render(request,'adminpanel/courses.html',context)  
@@ -64,26 +70,24 @@ def course(request):
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
 def teacher(request):
-    teachers = searchTeachers(request)
+    teachers,myFilter = searchTeachers(request)
 
     custom_range,teachers = paginateFees(request,teachers,10)
 
     context = {
-        'teachers':teachers,'custom_range':custom_range    
+        'teachers':teachers,'custom_range':custom_range,'myFilter':myFilter    
     }
     return render(request,'adminpanel/teachers.html',context)   
 
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
 def fee(request):
-    fees = searchFees(request)
+    fees,myFilter = searchFees(request)
 
     custom_range,fees = paginateFees(request,fees,10)
 
-    
-
     context = {
-        'fees':fees,'custom_range':custom_range
+        'fees':fees,'custom_range':custom_range,'myFilter':myFilter
     }
     return render(request,'adminpanel/fees.html',context)       
 
@@ -109,7 +113,6 @@ def view_card(request, pk=None):
         return render(request, 'adminpanel/view_id.html', context)
 
 
-
 @login_required(login_url='login') 
 # @allowed_users(allowed_roles=['admin'])   
 def addstudent(request):
@@ -117,9 +120,28 @@ def addstudent(request):
 
     if request.method == 'POST':
         form = StudentForm(request.POST,request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('student')
+        dob = request.POST['StDob']
+        phn = request.POST['StPhone']
+        phn_pattern = re.compile('^9(8|7)\d{8}$')
+        dob_pattern = re.compile('^(19\d{2}|(2\d{3}))[-/](0|1)\d{1}[-/](0|1|2|3)(0|1|2|3)$')
+
+        if(phn_pattern.match(phn)):
+            if(dob_pattern.match(dob)):
+                if form.is_valid():
+                    form.save()
+                messages.success(request,'Student successfully added.')    
+                return redirect('student')  
+            else:
+                messages.warning(request,'Invalid date of birth')
+        else:
+            messages.warning(request,'Invalid phone number')    
+
+        
+        
+        # form = StudentForm(request.POST,request.FILES)
+        # if form.is_valid():
+        #     form.save()
+        #     return redirect('student')
 
 
     context = {'form':form}
@@ -132,9 +154,26 @@ def updateStudent(request,pk):
     form = StudentForm(instance=student)
     if request.method == 'POST':
         form = StudentForm(request.POST,request.FILES,instance=student)
-        if form.is_valid():
-            form.save()
-            return redirect('student')
+        
+        phn = request.POST['StPhone']
+        dob = request.POST['StDob']
+
+        phn_pattern = re.compile('^9(8|7)\d{8}$')
+        dob_pattern = re.compile('^(19\d{2}|(2\d{3}))[-/](0|1)\d{1}[-/](0|1|2|3)(0|1|2|3)$')
+
+        if(phn_pattern.match(phn)):
+            if(dob_pattern.match(dob)):
+                if form.is_valid():
+                    form.save()
+                    messages.success(request,'Table updated successfully.')    
+                    return redirect('student')  
+                else:
+                    messages.warning(request,"Table update failed")
+            else:
+                messages.warning(request,'Invalid date of birth')
+        else:
+            messages.warning(request,'Invalid phone number')     
+
     context = {
         'form':form
     }
@@ -149,6 +188,7 @@ def deleteStudent(request,pk):
     }
     if request.method=='POST':
         student.delete()
+        messages.success(request,'Deletion successful.')
         return redirect('student')
 
 
@@ -160,12 +200,29 @@ def addteacher(request):
     form = TeacherForm()
     if request.method == 'POST':
         form = TeacherForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('teacher')
+
+        phn = request.POST['TPhone']
+        dob = request.POST['TDob']
+
+        phn_pattern = re.compile('^9(8|7)\d{8}$')
+        dob_pattern = re.compile('^(19\d{2}|(2\d{3}))[-/](0|1)\d{1}[-/](0|1|2|3)(0|1|2|3)$')
+
+        if(phn_pattern.match(phn)):
+            if(dob_pattern.match(dob)):
+                if form.is_valid():
+                    form.save()
+                    messages.success(request,'Teacher successsfully added.')    
+                    return redirect('teacher')
+                else:
+                    messages.warning(request,'Failed to add teacher.')
+            else:
+                messages.warning(request,'date of birth is incorrect')    
+        else:
+            messages.warning(request,'phone number is incorrect')    
 
     context = {'form':form}
     return render(request,'adminpanel/edit_form.html',context)
+
 
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
@@ -174,9 +231,26 @@ def updateTeacher(request,pk):
     form = TeacherForm(instance=teacher)
     if request.method=='POST':
         form = TeacherForm(request.POST,instance=teacher)
-        if form.is_valid():
-            form.save()
-            return redirect('teacher')
+
+        phn = request.POST['TPhone']
+        dob = request.POST['TDob']
+
+        phn_pattern = re.compile('^9(8|7)\d{8}$')
+        dob_pattern = re.compile('^(19\d{2}|(2\d{3}))[-/](0|1)\d{1}[-/](0|1|2|3)(0|1|2|3)$')
+
+        if(phn_pattern.match(phn)):
+           if(dob_pattern.match(dob)):
+                if form.is_valid():
+                    form.save()
+                    messages.success(request,'Table Updated Successfully.')    
+                    return redirect('teacher')  
+                else:
+                    messages.warning(request,'Update Failed.')    
+           else:
+               messages.warning(request,'Date of birth is incorrect')    
+        else:
+            messages.warning(request,'Phone number is incorrect') 
+
     context={
         'form':form
     }
@@ -193,6 +267,7 @@ def deleteTeacher(request,pk):
 
     if request.method == 'POST':
         teacher.delete()
+        messages.success(request,'Deletion successful.')
         return redirect('teacher')
 
     return render(request,"delete_object.html",context) 
@@ -206,7 +281,10 @@ def addcourse(request):
         form = CourseForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request,'Course Added Successfully.') 
             return redirect('course')
+        else:
+            messages.warning(request,'Course could not be added.')     
 
     context = {'form':form}
     return render(request,'adminpanel/edit_form.html',context)
@@ -220,7 +298,10 @@ def updateCourse(request,pk):
         form = CourseForm(request.POST,instance=course)
         if form.is_valid():
             form.save()
+            messages.success(request,'Table Updated Successfully.') 
             return redirect('course')
+        else:
+            messages.warning(request,'Table Update Failed.') 
     context={
         'form':form
     }
@@ -237,6 +318,7 @@ def deleteCourse(request,pk):
 
     if request.method == 'POST':
         course.delete()
+        messages.success(request,'Deletion successful.')
         return redirect('Course')
 
     return render(request,"delete_object.html",context) 
@@ -250,7 +332,11 @@ def addfee(request):
         form = FeeForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request,'Fee added successfully.') 
             return redirect('fee')
+        else:
+            messages.warning(request,'Failed to add fee.')
+            
 
 
     context = {'form':form}
@@ -268,7 +354,10 @@ def updateFee(request,pk):
         form = FeeForm(request.POST,instance=fee)
         if form.is_valid():
             form.save()
+            messages.success(request,'Table updated successfully.') 
             return redirect('fee')
+        else:
+            messages.warning(request,'Table update failed.')
 
 
     return render(request,"adminpanel/edit_form.html",context)
@@ -282,6 +371,7 @@ def deleteFee(request,pk):
     }
     if request.method == 'POST':
         fee.delete()
+        messages.success(request,'Deletion successful.')
         return redirect('fee')
 
 

@@ -10,8 +10,10 @@
             <div class="table-data__tool-left">
                 <form action="{% url 'teacher' %}" method="get">
                     <div>
+                        <label for="">Name:</label>
                         <input class="input input--text" id="formInput#search" type="text" value="{{search_query}}"
-                            name="search_query" placeholder="Search by Teacher" />
+                            name="search_query" placeholder="" />
+                            {{myFilter.form}}
                         <input class="btn btn--sub btn--lg" type="submit" value="Search" />
                     </div>
                 </form>
@@ -54,7 +56,7 @@
                                 </button>
                                 <button class="item" data-toggle="tooltip" data-placement="top" title=""
                                     data-original-title="Delete">
-                                    <a href="{% url 'delete-teacher' teacher.TNum %}?next=/adminpanel/teachers"><i
+                                    <a href="{% url 'delete-teacher' teacher.TNum %}?next=/adminpanel/teachers/"><i
                                             class="zmdi zmdi-delete"></i></a>
                                 </button>
                             </div>

@@ -9,8 +9,10 @@
       <div class="table-data__tool-left">
         <form action="{% url 'fee' %}" method="get">
           <div>
+            <label for="">Student Name</label>
             <input class="input input--text" id="formInput#search" type="text" value="{{search_query}}"
-              name="search_query" placeholder="Search by Student" />
+              name="search_query" placeholder="" />
+              {{myFilter.form}}
             <input class="btn btn--sub btn--lg" type="submit" value="Search" />
           </div>
         </form>
@@ -30,7 +32,7 @@
             <th>Fee Amount(monthly)</th>
             <th>Admission</th>
             <th>Refundable Deposit</th>
-            <th>Fee Date</th>
+            <th>Fee Date(FDate)</th>
           </tr>
         </thead>
         <tbody>
@@ -50,7 +52,7 @@
                   <a href="{% url 'update-fee' fee.FNum %}"><i class="zmdi zmdi-edit"></i></a>
                 </button>
                 <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                  <a href="{% url 'delete-fee' fee.FNum %}?next=/adminpanel/fees"><i class="zmdi zmdi-delete"></i></a>
+                  <a href="{% url 'delete-fee' fee.FNum %}?next=/adminpanel/fees/"><i class="zmdi zmdi-delete"></i></a>
                 </button>
               </div>
             </td>

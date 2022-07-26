@@ -10,8 +10,10 @@
       <div class="table-data__tool-left">
         <form action="{% url 'student' %}" method="get">
           <div>
+            <label for="">Name:</label>
             <input class="input input--text" id="formInput#search" type="text" value="{{search_query}}"
-              name="search_query" placeholder="Search by Student" />  
+              name="search_query" placeholder="" />
+            {{myFilter.form}}
             <input class="btn btn--sub btn--lg" type="submit" value="Search" />
           </div>
         </form>
@@ -38,8 +40,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for student in students %} {% if student.StCName.all.count >= 1 %}
-          {% for cname in student.StCName.all %}
+          {% for student in students %} 
           <tr class="tr-shadow">
             <td>{{student.StName}}</td>
             <!-- <td><img src="{{student.StImage.url}}" alt=""></td> -->
@@ -50,7 +51,15 @@
             <td>{{student.StAddress}}</td>
             <td>{{student.StDob}}</td>
             <td>{{student.StGender}}</td>
-            <td>{{cname}}</td>
+
+            {% if student.StCName.all.count >= 1 %}
+            <td>
+            {% for cname in student.StCName.all %}
+            {{cname}}
+            {% endfor %}
+            </td>
+            {% endif %}
+
             <td class="desc">{{student.StRemarks}}</td>
             <td>
               <div class="table-data-feature">
@@ -61,14 +70,14 @@
                   <a href="{% url 'update-student' student.StNum %}"><i class="zmdi zmdi-edit"></i></a>
                 </button>
                 <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
-                  <a href="{% url 'delete-student' student.StNum %}?next=/adminpanel/students"><i
+                  <a href="{% url 'delete-student' student.StNum %}?next=/adminpanel/students/"><i
                       class="zmdi zmdi-delete"></i></a>
                 </button>
               </div>
             </td>
           </tr>
           <tr class="spacer"></tr>
-          {% endfor %} {% endif %} {% endfor %}
+           {% endfor %}
         </tbody>
       </table>
     </div>

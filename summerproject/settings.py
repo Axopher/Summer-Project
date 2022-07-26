@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'adminpanel.apps.AdminpanelConfig',
     'users.apps.UsersConfig',
     'fontawesomefree',
+
+    'django_filters',
 ]
 
 MIDDLEWARE = [
