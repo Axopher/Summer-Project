@@ -13,6 +13,8 @@ class StudentFilter(django_filters.FilterSet):
         fields = ['StPhone','StEmail']
 
 
+
+
 class CourseFilter(django_filters.FilterSet):
     # start_date = DateFilter(field_name="created",lookup_expr="gte")
     # end_date = DateFilter(field_name="created",lookup_expr="lte")
@@ -21,6 +23,8 @@ class CourseFilter(django_filters.FilterSet):
     class Meta:
         model = Course
         fields = ['CPrice','CDuration']
+
+       
 
 class TeacherFilter(django_filters.FilterSet):
     TPhone = CharFilter(field_name="TPhone",lookup_expr='icontains')

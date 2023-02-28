@@ -1,4 +1,5 @@
 {% extends 'main.html' %}
+
 {% block content %}
 
 
@@ -10,7 +11,17 @@
             <div class="table-data__tool-left">
                 <form action="{% url 'course' %}" method="get">
                     <div>
-                        <label for="">Course Name:</label>
+
+                        <!-- class="form-control mr-sm-2" -->
+
+                        <!-- <form class="form-inline my-2 my-lg-0">
+                            
+                            <input  type="search" placeholder="" aria-label="Search">
+                            {{myFilter.form}}
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                          </form> -->
+
+                        <label for="">Course Name:</label>  
                         <input class="input input--text" id="formInput#search" type="text" value="{{search_query}}"
                             name="search_query" placeholder="" />
                         {{myFilter.form}}

@@ -17,6 +17,7 @@
             <input class="btn btn--sub btn--lg" type="submit" value="Search" />
           </div>
         </form>
+        
       </div>
       <div class="table-data__tool-right">
         <button class="au-btn au-btn-icon au-btn--green au-btn--small">
@@ -63,9 +64,6 @@
             <td class="desc">{{student.StRemarks}}</td>
             <td>
               <div class="table-data-feature">
-                <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="View ID">
-                  <a href="{% url 'view-card' student.StNum %}"><i class="zmdi zmdi-eye"></i></a>
-                </button>
                 <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">
                   <a href="{% url 'update-student' student.StNum %}"><i class="zmdi zmdi-edit"></i></a>
                 </button>

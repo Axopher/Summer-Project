@@ -1,4 +1,5 @@
 
+from calendar import month
 from django.shortcuts import redirect, render,HttpResponse
 from .models import *
 
@@ -7,6 +8,7 @@ from .forms import *
 from django.contrib.auth.decorators import login_required
 
 from .utils import * 
+from users.models import Order
 
 # from django.core.paginator import Paginator , PageNotAnInteger , EmptyPage
 
@@ -17,7 +19,9 @@ from .utils import *
 import re
 from django.contrib import messages
 
- 
+# for charts
+from django.http import JsonResponse
+
 # Create your views here.
 
 @login_required(login_url='login')
@@ -26,27 +30,93 @@ def viewDashboard(request):
     courseCount = Course.objects.all().count()
     studentCount = Student.objects.all().count()
     teacherCount = Teacher.objects.all().count()
+    fees = Fee.objects.all()
 
     total_fee = 0
-    feeObj = Fee.objects.all()
-    for fee in feeObj:
+    for fee in fees:
         total_fee+=fee.FAmount
     
+
+    # monthly fee dictionary calculations
+    monthly_fees_dict = {}
+    for fee in fees:
+        if fee.FDate.strftime("%B") not in monthly_fees_dict:
+            monthly_fees_dict[fee.FDate.strftime("%B")] = fee.FAmount
+        else:
+            monthly_fees_dict[fee.FDate.strftime("%B")] += fee.FAmount   
+      
+    # end of monthly fee dictionary calculations
+   
+
+    # top courses count
+    students = Student.objects.all()
+    total_courses = {}
+    for student in students:
+        for cname in student.StCName.all():
+            if cname not in total_courses:
+                total_courses[cname] = 1
+            else:
+                total_courses[cname] += 1 
+
+    sort_courses = sorted(total_courses.items(), key=lambda x: x[1], reverse=True)
+    # end of top courses count
+
+    # Fees generating courses 
+    total_fees_by_courses = {}
+    for fee in fees:       
+        for cname in fee.FCourseName.all():
+            if cname not in total_fees_by_courses:
+                print(type(cname))
+                total_fees_by_courses[cname] = fee.FAmount
+            else:
+                total_fees_by_courses[cname] += fee.FAmount
+
+    sort_courses_by_fees = sorted(total_fees_by_courses.items(), key=lambda x: x[1], reverse=True)
+    # end of Fees generating courses
+
+    # payment read count
+    unreadCount = Order.objects.filter(is_read=False).count()
+
     context = {
         'courseCount':courseCount,
         'total_fee':total_fee,
         'studentCount':studentCount,
-        'teacherCount':teacherCount
+        'teacherCount':teacherCount,
+        'sortedCourse':sort_courses,
+        'fees':fees,
+        'monthly_fees_dict':monthly_fees_dict,
+        'sort_courses_by_fees':sort_courses_by_fees,
+        'unreadCount':unreadCount,
     }
 
+
     return render(request,'adminpanel/dashboard.html',context)
+
+
+@login_required(login_url='login')
+def viewPayment(request):
+    search_query = ''
+    if request.GET.get('search_query'):
+        search_query = request.GET.get('search_query')
+
+
+    orders = Order.objects.filter(sname__icontains=search_query)
+
+    custom_range,orders = paginateOrders(request,orders,7)
+
+
+
+    context = {'orders':orders,'custom_range':custom_range}
+    return render(request,'adminpanel/payments.html',context)
+
+
 
 @login_required(login_url='login')
 # @allowed_users(allowed_roles=['admin'])
 def student(request):
     students,myFilter=searchStudents(request)
 
-    custom_range,students = paginateStudents(request,students,10)
+    custom_range,students = paginateStudents(request,students,7)
 
     context = {'students' : students,'custom_range':custom_range,'myFilter':myFilter}
     return render(request,'adminpanel/students.html',context)
@@ -57,7 +127,7 @@ def student(request):
 def course(request):
     courses,myFilter = searchCourses(request)
 
-    custom_range,courses = paginateStudents(request,courses,10)
+    custom_range,courses = paginateStudents(request,courses,7)
 
     context = {
         'courses':courses,
@@ -72,7 +142,7 @@ def course(request):
 def teacher(request):
     teachers,myFilter = searchTeachers(request)
 
-    custom_range,teachers = paginateFees(request,teachers,10)
+    custom_range,teachers = paginateFees(request,teachers,7)
 
     context = {
         'teachers':teachers,'custom_range':custom_range,'myFilter':myFilter    
@@ -84,33 +154,13 @@ def teacher(request):
 def fee(request):
     fees,myFilter = searchFees(request)
 
-    custom_range,fees = paginateFees(request,fees,10)
+    custom_range,fees = paginateFees(request,fees,7)
 
     context = {
         'fees':fees,'custom_range':custom_range,'myFilter':myFilter
     }
     return render(request,'adminpanel/fees.html',context)       
 
-
-def context_data():
-    context = {
-        'page_name' : '',
-        'page_title' : 'Chat Room',
-        'system_name' : 'Employee ID with QR Code Generator',
-        'topbar' : True,
-        'footer' : True,
-    }
-
-    return context
-
-@login_required
-def view_card(request, pk=None):
-    if pk is None:
-        return HttpResponse("Student ID is Invalid")
-    else:
-        context = context_data()
-        context['student'] = Student.objects.get(StNum=pk)
-        return render(request, 'adminpanel/view_id.html', context)
 
 
 @login_required(login_url='login') 
@@ -376,3 +426,37 @@ def deleteFee(request,pk):
 
 
     return render(request,"delete_object.html",context)
+
+
+@login_required(login_url='login')
+def addProduct(request):
+    form = ProductForm()
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save() 
+            return redirect('home')
+        else:
+            messages.warning(request,'Failed to add Product.')
+            
+
+
+    context = {'form':form}
+    return render(request,'adminpanel/edit_form.html',context)      
+
+
+@login_required(login_url='login')
+# @allowed_users(allowed_roles=['admin'])
+def deleteProduct(request,pk):
+    product = Product.objects.get(id=pk)
+
+    context={
+        'object':product
+    }
+
+    if request.method == 'POST':
+        product.delete()
+        return redirect('home')
+
+    return render(request,"delete_object.html",context) 

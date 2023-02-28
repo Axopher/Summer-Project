@@ -1,11 +1,12 @@
 from operator import truediv
 from tokenize import blank_re
-from users.models import Profile
 from django.db import models
 import uuid
 from django.contrib.auth.models import User
 from PIL import Image
 # from django.contrib.auth.models import User
+
+
 
 # Create your models here.
 
@@ -53,7 +54,7 @@ class Student(models.Model):
     # user = models.OneToOneField(User,on_delete=models.CASCADE,null=True,blank=True)
     StNum = models.UUIDField(default=uuid.uuid4,unique=True,primary_key=True,editable=False)
     StName = models.CharField(max_length=100)
-    StImage = models.ImageField(null=True,blank=True,default="avatar.jpg")
+    StImage = models.ImageField(null=True,blank=True,upload_to="profiles/",default="profiles/avatar.jpg")
     StPhone = models.PositiveIntegerField()
     StEmail = models.EmailField()
     StAddress = models.CharField(max_length=100)
@@ -87,7 +88,7 @@ class Fee(models.Model):
         db_table = 'fee'
         ordering = ['-FDate']
 
+
     def __str__(self):
         return str(self.FStudName)
-
 

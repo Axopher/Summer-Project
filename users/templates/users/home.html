@@ -1,18 +1,431 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-    <main class="Introduction">
-        <p>Welcome To Nepal Sangeet Vidhyalaya System</p>
-        <!-- <img src="{% static 'images/logo.png' %}" alt=""> -->
-        <p>The courses we have here are: 
-             <ul>
-                 <li>Piano</li>
-                 <li>Vocals</li>
-                 <li>Guitar</li>
-                 <li>Drums</li>
-                 <li>Saxophone</li>
-             </ul>
-        </p>
-     </main>
+
+<!-- search bar -->
+<div class="home_search_wrapper">
+  <form action="{% url 'home' %}" method="get">
+      <input type="text" name="search_query" class="input" placeholder="what courses are you looking for?" value="{{search_query}}">   
+      <span class="btn_for_search">
+        <i class="fas fa-search "><input type="submit" value=""></i>
+    </span>
+  </form> 
+</div>
+
+<div class="container">
+  {% for product in products %}
+  <div id="small_container">
+    <!-- Start	Product details -->
+    <div class="product-details">
+
+      <!-- 	Product Name -->
+      <h1>{{product.course}} Course</h1>
+
+      <!-- The most important information about the product -->
+      <p class="information">" {{product.description|slice:"150"}} "</p>
+
+
+
+      <!-- 		Control -->
+      <div class="control">
+
+        {% if request.user.is_authenticated %}
+        <!-- Delete Button -->
+        <a target="_blank" href="{% url 'delete-product' product.id %}?next=/">
+          <button class="btn2">
+            <!-- 		the Price -->
+            <span class="price2">{{product.productPrice}}</span>
+            
     
+           
+            <span class="delete-cart2"><i class="fa fa-trash" aria-hidden="true"></i></span>
+            
+            
+            <span class="delete">Delete</span>
+          </button>
+          </a>
+          <!-- End Button -->
+        {% else %}
+        <!-- Start Button buying -->
+        <a target="_blank" href="{% url 'checkout' product.id %}">
+        <button class="btn">
+          <!-- 		the Price -->
+          <span class="price">{{product.productPrice}}</span>
+          <!-- 		shopping cart icon-->
+  
+         
+          <span class="shopping-cart"><i class="fa fa-shopping-cart" aria-hidden="true"></i></span>
+          <!-- 		Buy Now / ADD to Cart-->
+          
+          <span class="buy">Buy Now</span>
+        </button>
+        </a>
+        <!-- End Button buying -->
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- 	End	Product details   -->
+
+
+
+    <!-- 	Start product image & Information -->
+
+    <div class="product-image">
+
+      <img src="{{product.featured_image.url}}" alt="Omar Dsoky">
+
+      <!-- 	product Information-->
+      <div class="info">
+        <h2>The Description</h2>
+        <ul>
+          <li><strong>Presented by:</strong> {{product.teacherName}}</li>
+          <li><strong>Duration:</strong> {{product.duration}} month{{product.duration|pluralize:'s'}}</li>
+        </ul>
+      </div>
+    </div>
+    <!--  End product image  -->
+
+  </div>
+  {% endfor %}
+</div>
+
+
+
+
+
+
+<style>
+  /* fonts  */
+  @import url('https://fonts.googleapis.com/css?family=Abel|Aguafina+Script|Artifika|Athiti|Condiment|Dosis|Droid+Serif|Farsan|Gurajada|Josefin+Sans|Lato|Lora|Merriweather|Noto+Serif|Open+Sans+Condensed:300|Playfair+Display|Rasa|Sahitya|Share+Tech|Text+Me+One|Titillium+Web');
+
+  body {
+  
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+form{
+  width: 500px;
+}
+
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .home_search_wrapper{
+    background: rgba(0, 0, 0,0.6);
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Comfortaa', cursive;
+}
+
+.home_search_wrapper .input {
+    width: 85%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.btn_for_search{
+  position: absolute;
+  background: #ffec00;
+  padding: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
+  top: 119px;
+  left: 65%;
+  transform: translate(-50%, -50%);
+  font-size: 23px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
+  #small_container {
+    box-shadow: 0 15px 30px 1px rgba(128, 128, 128, 0.31);
+    background: rgba(255, 255, 255, 0.90);
+    text-align: center;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 40px;
+    height: 350px;
+    width: 564px;
+
+  }
+
+
+
+  /* 	Product details  */
+  .product-details {
+    position: relative;
+    text-align: left;
+    overflow: hidden;
+    padding: 30px;
+    height: 100%;
+    float: left;
+    width: 48%;
+
+  }
+
+  /* 	Product Name */
+  #small_container .product-details h1 {
+    font-family: 'Old Standard TT', serif;
+    display: inline-block;
+    position: relative;
+    font-size: 34px;
+    color: #344055;
+    margin-left: 0;
+
+  }
+
+  #small_container .product-details h1:before {
+    position: absolute;
+    content: '';
+    right: 0%;
+    top: 0%;
+    transform: translate(25px, -15px);
+    font-family: 'Farsan', cursive;
+    display: inline-block;
+
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 5px;
+    color: #FFF;
+    margin: 0;
+    animation: chan-sh 6s ease infinite;
+
+  }
+
+
+  /* The most important information about the product */
+  #small_container .product-details>p {
+    font-family: 'Farsan', cursive;
+    text-align: center;
+    font-size: 20px;
+    color: #7d7d7d;
+
+  }
+
+  /* control */
+
+  .control {
+    position: absolute;
+    bottom: 2%;
+    left: 22.8%;
+
+  }
+
+  /* the Button */
+  .btn {
+    transform: translateY(0px);
+    transition: 0.3s linear;
+    background: #49C608;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    color: #eee;
+    padding: 0;
+    margin: 0;
+
+  }
+
+  .btn:hover {
+    transform: translateY(-4px);
+  }
+
+  .btn span {
+    font-family: 'Farsan', cursive;
+    transition: transform 0.3s;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    margin: 0;
+
+  }
+
+  /* shopping cart icon */
+  .btn .price,
+  .shopping-cart {
+    background: #333;
+    border: 0;
+    margin: 0;
+  }
+
+  .btn .price {
+    transform: translateX(-10%);
+    padding-right: 15px;
+  }
+
+  /* the Icon */
+  .btn .shopping-cart {
+    transform: translateX(-100%);
+    position: absolute;
+    background: #333;
+    z-index: 1;
+    left: 0;
+    top: 0;
+  }
+
+  /* buy */
+  .btn .buy {
+    z-index: 3;
+    font-weight: bolder;
+  }
+
+  .btn:hover .price {
+    transform: translateX(-110%);
+  }
+
+  .btn:hover .shopping-cart {
+    transform: translateX(0%);
+  }
+
+
+  .btn2 {
+    transform: translateY(0px);
+    transition: 0.3s linear;
+    background: #a41c15;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    color: #eee;
+    padding: 0;
+    margin: 0;
+
+  }
+
+  .btn2:hover {
+    transform: translateY(-4px);
+  }
+
+  .btn2 span {
+    font-family: 'Farsan', cursive;
+    transition: transform 0.3s;
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    margin: 0;
+
+  }
+
+  /* shopping cart icon */
+  .btn2 .price2,
+  .delete-cart2 {
+    background: #333;
+    border: 0;
+    margin: 0;
+  }
+
+  .btn2 .price2 {
+    transform: translateX(-10%);
+    padding-right: 15px;
+  }
+
+  /* the Icon */
+  .btn2 .delete-cart2 {
+    transform: translateX(-100%);
+    position: absolute;
+    background: #333;
+    z-index: 1;
+    left: 0;
+    top: 0;
+  }
+
+  /* buy */
+  .btn2 .delete {
+    z-index: 3;
+    font-weight: bolder;
+  }
+
+  .btn2:hover .price2 {
+    transform: translateX(-110%);
+  }
+
+  .btn2:hover .delete-cart2 {
+    transform: translateX(0%);
+  }
+ 
+  
+
+
+  /* product image  */
+  .product-image {
+    transition: all 0.3s ease-out;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    float: right;
+    width: 50%;
+    display: inline-block;
+  }
+
+  #small_container img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .info {
+    background: rgba(27, 26, 26, 0.9);
+    font-family: 'Farsan', cursive;
+    transition: all 0.3s ease-out;
+    transform: translateX(-100%);
+    position: absolute;
+    line-height: 1.9;
+    text-align: left;
+    font-size: 120%;
+    cursor: no-drop;
+    color: #FFF;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  .info h2 {
+    color: white;
+    padding: 20px;
+  }
+
+  .info ul li {
+    padding-left: 5px;
+  }
+
+  .info h2 {
+    text-align: center
+  }
+
+  .product-image:hover .info {
+    transform: translateX(0);
+  }
+
+  .info ul li {
+    transition: 0.3s ease;
+  }
+
+  .info ul li:hover {
+    transform: translateX(50px) scale(1.3);
+  }
+
+  .product-image:hover img {
+    transition: all 0.3s ease-out;
+  }
+
+  .product-image:hover img {
+    transform: scale(1.2, 1.2);
+  }
+</style>
 {% endblock %}

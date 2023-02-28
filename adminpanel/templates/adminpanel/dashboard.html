@@ -1,4 +1,10 @@
 {% extends 'main.html' %}
+
+<!-- for charts -->
+<script>
+
+</script>
+
 {% block content %}
 
 
@@ -60,5 +66,133 @@
 </section>
 <!-- END STATISTIC-->
 
+<!-- STATISTIC CHART-->
+<section class="statistic-chart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="title-5 m-b-35">statistics</h3>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 col-lg-4">
+                <!-- CHART-->
+                <div class="statistic-chart-1">
+                    <h3 class="title-3 m-b-30">Monthly Income Chart</h3>
+                    <div class="chart-wrap">  
+                    <canvas id="myBarChart"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                        const data_bar = {
+                          labels: [{% for month in monthly_fees_dict.keys %} '{{month}}', {% endfor %}],
+                          datasets: [{
+                            label: 'Total Monthly Fees',
+                            backgroundColor: 'rgb(46,80,144)',
+                            borderColor: 'rgb(46,80,144)',
+                            data: [{% for fees_collected in monthly_fees_dict.values %} {{fees_collected}}, {% endfor %}],
+                          }]
+                        };
+                      
+                        const config_bar = {
+                          type: 'bar',
+                          data: data_bar,
+                          options: {}
+                        };
+                      </script>
+                       
+                      <script>
+                        const myBarChart = new Chart(
+                          document.getElementById('myBarChart'),
+                          config_bar
+                        );
+                      </script>
+
+                    </div>
+                    <div class="statistic-chart-1-note">
+                        <span class="big">{{total_fee}}</span>
+                        <span>/ Total Fees Collected</span>
+                    </div>
+                </div>
+                <!-- END CHART-->
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <!-- TOP CAMPAIGN-->
+                <div class="top-campaign">
+                    <h3 class="title-3 m-b-30">top courses</h3>
+                    <div class="table-responsive">
+                        <table class="table table-top-campaign">
+                            <tbody>
+                                {% for course in sortedCourse %}
+                                <tr>
+                                    <td>{{forloop.counter}}. {{course.0}}</td>
+                                    <td>({{course.1}} student{{course.1|pluralize:'s'}})</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- END TOP CAMPAIGN-->
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <!-- CHART PERCENT-->
+                <div class="chart-percent-2">
+                    <h3 class="title-3 m-b-30">Income from Courses</h3>
+                    <canvas id="myDoughnutChart"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                        const data_doughnut = {
+                          labels: [{% for course in sort_courses_by_fees %} '{{course.0}}', {% endfor %}],
+                          datasets: [{
+                            label: 'Monthly Fees',
+                            backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'rgb(192,232,213)',
+                            'rgb(237,234,224)',
+                            'rgb(127,255,0)',
+                            'rgb((185,217,235)',
+                            'rgb(93,57,84)',
+                            'rgb(169,169,169)',
+                            ],
+                            borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)',
+                            'rgb(192,232,213)',
+                            'rgb(237,234,224)',
+                            'rgb(127,255,0)',
+                            'rgb((185,217,235)',
+                            'rgb(93,57,84)',
+                            'rgb(169,169,169)',
+                            ],
+                            hoverOffset: 4,
+                            data: [
+                            {% for fees in sort_courses_by_fees %} {{fees.1}}, {% endfor %}],
+                          }]
+                        };
+                      
+                        const config_doughnut = {
+                          type: 'doughnut',
+                          data: data_doughnut,
+                          options: {}
+                        };
+                      </script>
+                       
+                      <script>
+                        const myDoughnutChart = new Chart(
+                          document.getElementById('myDoughnutChart'),
+                          config_doughnut
+                        );
+                      </script>
+                </div>
+                <!-- END CHART PERCENT-->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- END STATISTIC CHART-->
 
 {% endblock content %}

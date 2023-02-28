@@ -1,28 +1,40 @@
+from itertools import product
+from operator import truediv
+from tkinter.tix import Tree
 from django.db import models
-from django.contrib.auth.models import User
-
-# from adminpanel.models import Course
-
-from django.db.models.signals import post_save
+import uuid
+from adminpanel.models import Course
 
 # Create your models here.
-class Profile(models.Model):
-    username = models.CharField(max_length=200,blank=True,null=True)
-    fullname = models.CharField(max_length=200,blank=True,null=True)
-    # ppsize = models.ImageField(null=True,blank=True,upload_to='profiles/',default)
-    phone = models.IntegerField()
-    email = models.EmailField(max_length=500,blank=True,null=True)
-    address = models.CharField(max_length=200)
-    dob = models.DateField()
-    comment = models.TextField(null=True,blank=True)
+
+class Product(models.Model):
+    course = models.OneToOneField(Course,null=True,blank=True,on_delete=models.DO_NOTHING)
+    productName = models.CharField(max_length=200,null=True,blank=True)
+    teacherName = models.CharField(max_length=200,null=True,blank=True)
+    productPrice = models.PositiveIntegerField(null=True,blank=True)
+    duration= models.PositiveIntegerField(null=True,blank=True)
+    description = models.TextField(null=True,blank=True)
+    featured_image = models.ImageField(null=True,blank=True,upload_to="products/",default="products/default.jpg")
+    created = models.DateTimeField(auto_now_add=True)
+    id = models.UUIDField(default=uuid.uuid4,unique=True,primary_key=True,editable=False)
 
     def __str__(self):
-        return self.username
-        
-# def userCreated(sender,instance,created,**kwargs):
-#     print('User created')        
+        return str(self.course)
 
+class Order(models.Model):
+    product = models.ForeignKey(Product,max_length=200,null=True,blank=True,on_delete=models.SET_NULL)
+    sname = models.CharField(max_length=200,null=True,blank=True)
+    sphone = models.PositiveIntegerField(null=True,blank=True)
+    semail = models.EmailField(null=True,blank=True)
+    saddress = models.CharField(max_length=200,null=True,blank=True)
+    sgender = models.CharField(max_length=10,null=True,blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False,null=True)
 
+    def __str__(self):
+        return self.product.productName
 
+    class Meta:
+        ordering = ['-created']    
 
 

@@ -1,3 +1,5 @@
+from itertools import product
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -5,17 +7,61 @@ from django.contrib.auth.models import User
 
 from django.contrib import messages
 
-from .forms import ProfileForm
-
-from django.contrib.auth.forms import UserCreationForm
+# from .forms import ProfileForm
+import datetime
+import re
 
 from django.db.models.signals import post_save
-from .models import Profile
-from adminpanel.models import Student
+from .models import *
+
+from django.http import JsonResponse
+import json
 # Create your views here.
 
 def HomePageView(request):
-    return render(request,'users/home.html')
+    search_query = ''
+
+    if request.GET.get('search_query'):
+        search_query = request.GET.get('search_query')
+        print(search_query)
+
+    products = Product.objects.filter(productName__icontains=search_query)
+
+
+    return render(request,'users/home.html',{'products':products})
+
+def checkout(request,pk):
+    product = Product.objects.get(id=pk)
+    context = {
+        'product':product
+    }
+
+    return render(request,'users/checkout.html',context)
+
+def processOrder(request):
+    # transaction_id  = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+    name = data['form']['name']
+    phone = data['form']['phone']
+    email = data['form']['email']
+    address = data['form']['address']
+    gender = data['form']['gender']
+
+    
+
+    product = Product.objects.get(id=data['productId'])
+
+    Order.objects.create(
+		product=product,
+        sname=name,
+        sphone=phone,
+        semail=email,
+        saddress=address,
+        sgender=gender
+		)
+
+    return JsonResponse('Payment completed!', safe=False)
+
 
 def loginUser(request):
     page = 'login'
@@ -55,47 +101,3 @@ def logoutUser(request):
     messages.success(request,'user was successfully logged out')
     return redirect('login')    
 
-def registerUser(request):
-    page = 'register'
-    form = ProfileForm()
-
-    if request.method == 'POST':
-        form1 = ProfileForm(request.POST)
-        # form2 = UserCreationForm(request.POST)
-        if form1.is_valid():
-            user = form1.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            messages.success(request,'Your profile is created!')
-
-        # if form2.is_valid():
-        #     user = form2.save(commit=False)
-        #     user.username = user.username.lower()
-        #     user.password = user.username.lower()
-        #     user.save()
-        #     print(user)
-        #     messages.success(request,'Your account is created and your password is same as your username, change it.')
-        #     login(request,user)
-        #     return redirect('dashboard')
-
-
-    context = {'page':page,'form':form}
-    return render(request,'users/login_register.html',context)
-
-# def UserCreated(sender,instance,created,**kwargs):
-#     if created:
-#         profile = instance
-#         user = User.objects.create(
-#             user = user,
-#             username = profile.username,
-#             password1 = profile.username,
-#             password2 = profile.username
-
-#         )
-
-    
-
-
-# post_save.connect(UserCreated,sender=Profile)
-# def usersPage(request):
-#     return render(request,'users/userPage.html')

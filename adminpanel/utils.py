@@ -3,6 +3,8 @@ from .models import *
 from django.core.paginator import Paginator , PageNotAnInteger , EmptyPage
 
 from .filters import *
+    
+
 
 def searchStudents(request):
     search_query = ''
@@ -172,3 +174,29 @@ def paginateCourses(request,courses,results):
     custom_range = range(leftIndex,rightIndex)
     return custom_range,courses    
     
+def paginateOrders(request,orders,results):
+    
+    page = request.GET.get('page')
+    paginator = Paginator(orders,results)
+
+    try:
+        orders = paginator.page(page)
+    except PageNotAnInteger:
+        page = 1
+        orders = paginator.page(page)
+    except EmptyPage:
+        page = paginator.num_pages
+        orders = paginator.page(page)
+
+    leftIndex = (int(page)-3)
+    
+    if leftIndex < 1:
+        leftIndex = 1
+
+    rightIndex = (int(page)+4)
+
+    if rightIndex > paginator.num_pages:
+        rightIndex = paginator.num_pages+1    
+
+    custom_range = range(leftIndex,rightIndex)
+    return custom_range,orders    
