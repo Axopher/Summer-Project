@@ -13,5 +13,5 @@ d)Run this command:
 d)Finally, run the server: 
         >python manage.py runserver
 
-admin username- aman
+admin username = aman
 password = aman
